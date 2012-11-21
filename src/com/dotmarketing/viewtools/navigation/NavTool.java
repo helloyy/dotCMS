@@ -28,7 +28,7 @@ import com.dotmarketing.util.UtilMethods;
 import com.liferay.portal.model.User;
 
 public class NavTool implements ViewTool {
-    
+    private static User sysUser=null;
     private static NavToolCache navCache = null;
     private static FolderAPI fAPI=null;
     private Host currenthost=null;
@@ -49,8 +49,14 @@ public class NavTool implements ViewTool {
     }
     
     protected static NavResult getNav(Host host, String path) throws DotDataException, DotSecurityException {
-        User user=APILocator.getUserAPI().getSystemUser();
         
+        
+    	if(sysUser ==null){
+    		sysUser = APILocator.getUserAPI().getSystemUser();	
+    	}
+    	
+    	
+    	
         if(path != null && path.contains(".")){
         	path = path.substring(0, path.lastIndexOf("/"));
         }
@@ -58,21 +64,21 @@ public class NavTool implements ViewTool {
         
         
         
-        Folder folder=!path.equals("/") ? fAPI.findFolderByPath(path, host, user, true) : fAPI.findSystemFolder();
+        Folder folder=!path.equals("/") ? fAPI.findFolderByPath(path, host, sysUser, true) : fAPI.findSystemFolder();
         if(folder==null || !UtilMethods.isSet(folder.getIdentifier()))
             return null;
         
-        NavResult result=navCache.getNav(host.getIdentifier(), folder.getInode());
+        NavResult result=navCache.getNav(host.getIdentifier(), folder.getIdentifier());
         if(result==null) {
             String parentId;
             if(!folder.getInode().equals(FolderAPI.SYSTEM_FOLDER)) {
                 Identifier ident=APILocator.getIdentifierAPI().find(folder);
                 parentId=ident.getParentPath().equals("/") ? 
-                        FolderAPI.SYSTEM_FOLDER : fAPI.findFolderByPath(ident.getParentPath(), host, user, false).getInode();
+                        FolderAPI.SYSTEM_FOLDER : fAPI.findFolderByPath(ident.getParentPath(), host, sysUser, false).getIdentifier();
             }
             else
                 parentId=null;
-            result=new NavResult(parentId, host.getIdentifier(),folder.getInode());
+            result=new NavResult(parentId, host.getIdentifier(),folder.getIdentifier());
             Identifier ident=APILocator.getIdentifierAPI().find(folder);
             result.setHref(ident.getURI());
             result.setTitle(folder.getTitle());
@@ -88,26 +94,26 @@ public class NavTool implements ViewTool {
             if(path.equals("/"))
                 menuItems = fAPI.findSubFolders(host, true);
             else
-                menuItems = fAPI.findMenuItems(folder, user, true);
+                menuItems = fAPI.findMenuItems(folder, sysUser, true);
             
             for(Object item : menuItems) {
                 if(item instanceof Folder) {
                     Folder itemFolder=(Folder)item;
                     ident=APILocator.getIdentifierAPI().find(itemFolder);
-                    NavResult nav=new NavResult(folder.getInode(),host.getIdentifier(),itemFolder.getInode());
+                    NavResult nav=new NavResult(folder.getIdentifier(),host.getIdentifier(),itemFolder.getIdentifier());
                     nav.setTitle(itemFolder.getTitle());
                     nav.setHref(ident.getURI());
                     nav.setOrder(itemFolder.getSortOrder());
                     nav.setType("folder");
                     nav.setPermissionId(itemFolder.getPermissionId());
                     // it will load lazily its children
-                    folderIds.add(itemFolder.getInode());
+                    folderIds.add(itemFolder.getIdentifier());
                     children.add(nav);
                 }
                 else if(item instanceof HTMLPage) {
                     HTMLPage itemPage=(HTMLPage)item;
                     ident=APILocator.getIdentifierAPI().find(itemPage);
-                    NavResult nav=new NavResult(folder.getInode(),host.getIdentifier());
+                    NavResult nav=new NavResult(folder.getIdentifier(),host.getIdentifier());
                     nav.setTitle(itemPage.getFriendlyName());
                     nav.setHref(ident.getURI());
                     nav.setOrder(itemPage.getSortOrder());
@@ -117,8 +123,9 @@ public class NavTool implements ViewTool {
                 }
                 else if(item instanceof Link) {
                     Link itemLink=(Link)item;
-                    NavResult nav=new NavResult(folder.getInode(),host.getIdentifier());
-                    if(itemLink.getLinkType().equals(LinkType.CODE.toString())) {
+                    NavResult nav=new NavResult(folder.getIdentifier(),host.getIdentifier());
+                    if(itemLink.getLinkType().equals(LinkType.CODE.toString()) && LinkType.CODE.toString() !=null && (LinkType.CODE.toString().contains("$") || LinkType.CODE.toString().contains("#") )) {
+                    	
                         nav.setHrefVelocity(itemLink.getLinkCode());
                     }
                     else {
@@ -133,7 +140,7 @@ public class NavTool implements ViewTool {
                 else if(item instanceof IFileAsset) {
                     IFileAsset itemFile=(IFileAsset)item;
                     ident=APILocator.getIdentifierAPI().find(itemFile.getPermissionId());
-                    NavResult nav=new NavResult(folder.getInode(),host.getIdentifier());
+                    NavResult nav=new NavResult(folder.getIdentifier(),host.getIdentifier());
                     nav.setTitle(itemFile.getFriendlyName());
                     nav.setHref(ident.getURI());
                     nav.setOrder(itemFile.getMenuOrder());
@@ -143,7 +150,7 @@ public class NavTool implements ViewTool {
                 }
             }
             
-            navCache.putNav(host.getIdentifier(), folder.getInode(), result);
+            navCache.putNav(host.getIdentifier(), folder.getIdentifier(), result);
         }
         
         return result;
@@ -154,7 +161,7 @@ public class NavTool implements ViewTool {
     }
     
     public NavResult getNav(String path) throws DotDataException, DotSecurityException {
-        
+        if(path==null) path = "/";
         Host host=currenthost;
         if(path.startsWith("//")) {
             List<RegExMatch> find = RegEX.find(path, "^//(\\w+)/(.+)");

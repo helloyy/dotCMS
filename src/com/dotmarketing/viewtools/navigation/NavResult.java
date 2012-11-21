@@ -78,9 +78,9 @@ public class NavResult implements Iterable<NavResult>, Permissionable, Serializa
 
     public String getHref() {
         return hrefVelocity ?
-            UtilMethods.evaluateVelocity(href, VelocityServlet.velocityCtx.get())
-            : 
-            href;
+           UtilMethods.evaluateVelocity(href, VelocityServlet.velocityCtx.get())
+           : 
+           href;
     }
 
     public void setHref(String href) {
@@ -122,9 +122,18 @@ public class NavResult implements Iterable<NavResult>, Permissionable, Serializa
         if(children==null && hostId!=null && folderId!=null) {
             // lazy loadinge children
             User user=APILocator.getUserAPI().getSystemUser();
-            Host host=APILocator.getHostAPI().find(hostId, user, true);
-            Folder folder=APILocator.getFolderAPI().find(folderId, user, true);
-            Identifier ident=APILocator.getIdentifierAPI().find(folder);
+           // Host host=APILocator.getHostAPI().find(hostId, user, true);
+            
+            
+            
+            
+           // folder=APILocator.getFolderAPI().find(folderId, user, true);
+            Host host=new Host();
+            host.setIdentifier(hostId);
+            //Folder folder = new Folder();
+           // folder.setIdentifier(folderId);
+            
+            Identifier ident=APILocator.getIdentifierAPI().find(folderId);
             NavResult lazyMe=NavTool.getNav(host, ident.getPath());
             children=lazyMe.getChildren();
             childrenFolderIds=lazyMe.getChildrenFolderIds();
@@ -157,11 +166,11 @@ public class NavResult implements Iterable<NavResult>, Permissionable, Serializa
             if(currentUser==null) currentUser=APILocator.getUserAPI().getAnonymousUser();
             for(NavResult nv : list) {
                 try {
-                if(APILocator.getPermissionAPI().doesUserHavePermission(nv, PermissionAPI.PERMISSION_READ, currentUser)) {
-                    allow.add(nv);
-                }
+	                //if(APILocator.getPermissionAPI().doesUserHavePermission(nv, PermissionAPI.PERMISSION_READ, currentUser)) {
+	                    allow.add(nv);
+	                //}
                 }catch(Exception ex) {
-                    Logger.error(this, ex.getMessage(), ex);
+                	Logger.error(this, ex.getMessage(), ex);
                 }
             }
             return allow;
@@ -269,7 +278,7 @@ public class NavResult implements Iterable<NavResult>, Permissionable, Serializa
             if(type.equals("htmlpage"))
                 return APILocator.getHTMLPageAPI().loadLivePageById(permissionId, APILocator.getUserAPI().getSystemUser(), false).getParentPermissionable();
             if(type.equals("folder"))
-                return APILocator.getFolderAPI().find(folderId, APILocator.getUserAPI().getSystemUser(), false).getParentPermissionable();
+                return APILocator.getFolderAPI().find(permissionId, APILocator.getUserAPI().getSystemUser(), false).getParentPermissionable();
             if(type.equals("link"))
                 return APILocator.getMenuLinkAPI().findWorkingLinkById(permissionId, APILocator.getUserAPI().getSystemUser(), false).getParentPermissionable();
             if(type.equals("file")) {
