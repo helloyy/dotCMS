@@ -46,6 +46,7 @@ import org.apache.velocity.tools.view.servlet.ServletToolboxRuleSet;
 import org.osgi.framework.BundleContext;
 
 import com.dotmarketing.osgi.HostActivator;
+import com.dotmarketing.util.Logger;
 
 
 /**
@@ -147,7 +148,11 @@ public class ServletToolboxManager extends XMLToolboxManager
         // Register main service
         BundleContext context = HostActivator.instance().getBundleContext();
         Hashtable<String, String> props = new Hashtable<String, String>();
-        context.registerService(PrimitiveToolboxManager.class.getName(), this, props);
+        try{
+        	context.registerService(PrimitiveToolboxManager.class.getName(), this, props);
+        }catch (Exception e) {
+			Logger.info(this, "Unable to register OSGI for Velocity. Moving On");
+		}
     }
 
     /**

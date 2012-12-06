@@ -536,6 +536,7 @@
 				<param-value>com.dotmarketing.webdav.ResourceFactorytImpl</param-value>
 		</init-param>
 	</servlet>
+	<!-- 
 	<servlet>
 		<servlet-name>CMIS</servlet-name>
 		<servlet-class>org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet</servlet-class>
@@ -545,6 +546,7 @@
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
+	 -->
 	<servlet>
 		<servlet-name>ScheduledJobs</servlet-name>
 		<servlet-class>com.dotmarketing.servlets.RunScheduledJobServlet</servlet-class>
