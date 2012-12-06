@@ -107,7 +107,11 @@ public class WorkflowAPIImpl implements WorkflowAPI, WorkflowAPIOsgiService {
         // Register main service
         BundleContext context = HostActivator.instance().getBundleContext();
         Hashtable<String, String> props = new Hashtable<String, String>();
-        context.registerService(WorkflowAPIOsgiService.class.getName(), this, props);
+        try{
+        	context.registerService(WorkflowAPIOsgiService.class.getName(), this, props);
+        }catch (Exception e) {
+        	Logger.info(this, "Unable to register OSGI for Workflow. Moving On");
+		}
     }
 
     public WorkFlowActionlet newActionlet(String className) throws DotDataException {
