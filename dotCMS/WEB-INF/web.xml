@@ -242,6 +242,7 @@
 	<listener>
 	    <listener-class>com.dotmarketing.listeners.ClickstreamListener</listener-class>
 	</listener>
+	<!-- 
 	<listener>
 		<listener-class>com.dotmarketing.listeners.OsgiFelixListener</listener-class>
 	</listener>
@@ -251,6 +252,7 @@
     <listener>
 		<listener-class>org.apache.chemistry.opencmis.server.impl.CmisRepositoryContextListener</listener-class>
 	</listener>
+	 -->
     <listener>
     	<listener-class>com.dotcms.listeners.SessionMonitor</listener-class>
     </listener>
@@ -584,7 +586,7 @@
        <servlet-name>springmvc</servlet-name>
        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     </servlet>
-    <!-- REST -->
+    <!-- REST 
     <servlet>
 		<servlet-name>RESTAPI</servlet-name>
 		<servlet-class>
@@ -596,12 +598,13 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	 
     <servlet>
         <servlet-name>proxy</servlet-name>
-        <!--<servlet-class>org.apache.felix.http.proxy.ProxyServlet</servlet-class>-->
         <servlet-class>com.dotmarketing.osgi.OSGIProxyServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+     -->
 	<!--END DOTMARKETING SERVLETS-->
 	<!-- Don't ever delete the following comment tags, it will break the plugin system -->
 	<!-- BEGIN SERVLETS -->
@@ -625,10 +628,12 @@
     </servlet>
     <!-- END GRAZIANO issue-12-dnd-template -->
     <!-- DOTCMS SERVLET-MAPPINGS -->
+    <!-- 
     <servlet-mapping>
         <servlet-name>proxy</servlet-name>
         <url-pattern>/app/*</url-pattern>
     </servlet-mapping>
+     -->
     <servlet-mapping>
       <servlet-name>springmvc</servlet-name>
       <url-pattern>/spring/*</url-pattern>
@@ -677,10 +682,12 @@
 		<servlet-name>PHPServlet</servlet-name>
 		<url-pattern>*.php</url-pattern>
 	</servlet-mapping>
+	<!-- 
 	<servlet-mapping>
 		<servlet-name>CMIS</servlet-name>
 		<url-pattern>/cmis/*</url-pattern>
 	</servlet-mapping>
+	 -->
 	<servlet-mapping>
 		<servlet-name>ScheduledJobs</servlet-name>
 		<url-pattern>/dotScheduledJobs</url-pattern>
@@ -880,10 +887,12 @@
 		<servlet-name>JSONTagsServlet</servlet-name>
 		<url-pattern>/JSONTags/*</url-pattern>
 	</servlet-mapping>
+	 <!-- 
 	<servlet-mapping>
 		<servlet-name>RESTAPI</servlet-name>
 		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
+	 -->
 	<!-- BEGIN GRAZIANO issue-12-dnd-template -->
 	<servlet-mapping>
 		<servlet-name>PreviewDesignTemplateServlet</servlet-name>
