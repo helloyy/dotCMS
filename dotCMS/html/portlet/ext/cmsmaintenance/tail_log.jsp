@@ -1,12 +1,18 @@
+<%@page import="com.dotmarketing.util.Logger"%>
 <%
 
 	String regex = com.dotmarketing.util.Config.getStringProperty("TAIL_LOG_FILE_REGEX");
 	if(!com.dotmarketing.util.UtilMethods.isSet(regex)){
 		regex=".*";
 	}
-	String[] files = com.liferay.util.FileUtil.listFiles(
-	        com.dotmarketing.util.Config.CONTEXT.getRealPath(
-	                com.dotmarketing.util.Config.getStringProperty("TAIL_LOG_LOG_FOLDER")), true);
+	String[] files = new String[0];
+	try{
+		files = com.liferay.util.FileUtil.listFiles(
+		        com.dotmarketing.util.Config.CONTEXT.getRealPath(
+		                com.dotmarketing.util.Config.getStringProperty("TAIL_LOG_LOG_FOLDER")), true);
+	}catch(Exception e){
+		Logger.info(this, "Unable to read directory for logs");
+	}
 	java.util.regex.Pattern pp = java.util.regex.Pattern.compile(regex);
 	java.util.List<String> l = new java.util.ArrayList<String>();
 	for(String x : files){
